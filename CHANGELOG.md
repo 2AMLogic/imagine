@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **Behaviour change:** `fit` now defaults the destination to `<name>-fit.png`
+  regardless of the source extension (the `--out` help text already promised
+  this, and the `--max-kb` byte-budget pass only emits PNG8). `--max-kb` with a
+  non-PNG `--out` is refused up front with a clear message and writes nothing,
+  and `contain` letterboxes onto white for alpha-less destinations (`.jpg`)
+  instead of `-background none`.
 - `gen` / `edit` now print a one-line `imagine: note:` on stderr when an option
   does not apply to the selected provider: `--param` or `--size WxH` on a Gemini
   model, and `--size 1K/2K/4K` on a Cloudflare model. Generation still proceeds
@@ -29,6 +35,12 @@
   connection errors) up to 3 attempts with 1s/2s backoff, honouring
   `Retry-After` up to 30s. Each retry logs one stderr line. `--no-retry` or
   `IMAGINE_NO_RETRY=1` restores single-attempt behaviour.
+- **Behaviour change:** `gen` / `edit` now print the same Cloudflare
+  credentials guidance `doctor` does. With a `~/.cloudflare/<account>/workers-ai.env`
+  present but no account selected, they say selection is required even with a
+  single account and name `--cf-account <name>` / `IMAGINE_CF_ACCOUNT=<name>`,
+  instead of only listing the accounts found. Both surfaces now format one
+  helper, so the two copies cannot drift apart again.
 
 ## 0.1.0 — 2026-07-28
 
