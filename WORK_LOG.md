@@ -2,6 +2,16 @@
 
 Chronological record of merged PRs and closed issues, maintained by the Guide role.
 
+### 2026-11-15
+
+- **PR #25**: feat: note on stderr when --param or --size does not apply to the provider
+- **Issue #18** (closed): gen/edit: print a note when --param or --size does not apply to the selected provider
+
+### 2026-11-14
+
+- **PR #24**: feat: record --param values as `params` in gen/edit provenance
+- **Issue #19** (closed): gen/edit: record --param values in the provenance sidecar
+
 ### 2026-11-05
 
 - **PR #14**: docs: document opaque output and add full-bleed-then-mask transparency recipe
