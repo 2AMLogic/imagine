@@ -8,6 +8,12 @@
   non-PNG `--out` is refused up front with a clear message and writes nothing,
   and `contain` letterboxes onto white for alpha-less destinations (`.jpg`)
   instead of `-background none`.
+- `gen` / `edit` now print a one-line `imagine: note:` on stderr when an option
+  does not apply to the selected provider: `--param` or `--size WxH` on a Gemini
+  model, and `--size 1K/2K/4K` on a Cloudflare model. Generation still proceeds
+  and exits 0. All applicability notes — including the pre-existing `--ar is a
+  Gemini option` and undocumented-aspect-ratio notes, whose wording is unchanged
+  — are now emitted once per invocation rather than once per image under `--n`.
 - `gen` / `edit` sidecars and `--json` records gain a `params` object holding the
   parsed `--param` values (`{}` when none were given), so two runs differing only
   in `--param` no longer write identical provenance. Recorded as requested, even
