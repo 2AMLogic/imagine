@@ -35,7 +35,11 @@ imagine doctor        # credential + dependency check; run this first on any fai
 Every output `foo.png` gets a `foo.png.json` sidecar (prompt, model, format,
 mime, `params`, sha256, timestamp) — treat the pair as one artifact and keep
 them together. `params` holds the `--param` values as you passed them (`{}`
-when you passed none).
+when you passed none). `fit` output gets one too: `foo-fit.png.json` records
+`tool`, `operation: "fit"`, the `--size`/`--max-kb`/`--mode` arguments, the
+source path and sha256, the output's sha256, and the source's
+`prompt`/`provider`/`model`/`alias` under `source_record` when the source was
+itself a generated image (`null` otherwise).
 
 **`-o` is a stem hint, not a format request.** imagine never transcodes: the
 file keeps the provider's bytes, and the extension follows them (Gemini often

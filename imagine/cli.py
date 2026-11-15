@@ -263,6 +263,28 @@ def cmd_fit(args: argparse.Namespace) -> int:
         raise SystemExit(f"imagine: no such file: {src}")
     dest = Path(args.out) if args.out else src.with_name(f"{src.stem}-fit.png")
     fit_image(src, dest, size=args.size, max_kb=args.max_kb, mode=args.mode)
+    source_record = None
+    source_sidecar = src.with_suffix(src.suffix + ".json")
+    if source_sidecar.is_file():
+        try:
+            meta = json.loads(source_sidecar.read_text())
+        except (OSError, ValueError):
+            meta = None
+        if isinstance(meta, dict):
+            source_record = {k: meta.get(k) for k in ("prompt", "provider", "model", "alias")}
+    record = {
+        "tool": f"imagine {__version__}",
+        "operation": "fit",
+        "size": args.size,
+        "max_kb": args.max_kb,
+        "mode": args.mode,
+        "source": str(src),
+        "source_sha256": hashlib.sha256(src.read_bytes()).hexdigest(),
+        "sha256": hashlib.sha256(dest.read_bytes()).hexdigest(),
+        "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "source_record": source_record,
+    }
+    dest.with_suffix(dest.suffix + ".json").write_text(json.dumps(record, indent=2) + "\n")
     print(dest)
     return 0
 
