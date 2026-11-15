@@ -4,6 +4,12 @@ Chronological record of merged PRs and closed issues, maintained by the Guide ro
 
 ### 2026-11-15
 
+- **PR #35**: feat: write a provenance sidecar for fit output
+- **PR #29**: fix: stop fit writing PNG bytes under a non-PNG name; add postprocess tests
+- **PR #27**: fix: give gen/edit the same Cloudflare account-selection guidance as doctor
+- **Issue #22** (closed): Deduplicate the Cloudflare credentials-missing hint: gen still prints the pre-#4 message
+- **Issue #21** (closed): fit: write a provenance sidecar for the fitted image
+- **Issue #20** (closed): fit: stop writing PNG bytes under a non-PNG name, and add tests for postprocess
 - **PR #25**: feat: note on stderr when --param or --size does not apply to the provider
 - **Issue #18** (closed): gen/edit: print a note when --param or --size does not apply to the selected provider
 
