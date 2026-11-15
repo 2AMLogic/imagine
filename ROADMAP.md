@@ -15,16 +15,17 @@ carry: what is evidenced, what comes next, and why.
 Released: **0.1.0** (2026-07-28, `CHANGELOG.md`). `VERSION`, `pyproject.toml`
 and `imagine/__init__.py` all say `0.1.0`.
 
-Merged since the release and still under `## Unreleased` in `CHANGELOG.md`:
+Merged since the release; the last column says whether the row already has an
+entry under `## Unreleased` in `CHANGELOG.md`:
 
-| Area | Evidence |
-|---|---|
-| FLUX.2 Cloudflare models get a multipart body | PR #9, `tests/test_cloudflare.py`, fixture `cloudflare_flux2_400_multipart.json` |
-| Output extension follows the returned bytes; sidecar gains `format` / `mime` | PR #10, `tests/test_cli_output.py` |
-| `doctor` reports `NEEDS ACCOUNT` when a token file exists but no account is selected | PR #11, `tests/test_cli.py` |
-| Install metadata and gitignored sidecar from `install.sh` | PR #12, `tests/test_install.py` |
-| Bounded retry of transient provider errors, `--no-retry` | PR #13, `tests/test_retry.py` |
-| Opaque-output warning and the full-bleed-then-mask recipe | PR #14, `skills/imagine/SKILL.md` |
+| Area | Evidence | Changelog |
+|---|---|---|
+| FLUX.2 Cloudflare models get a multipart body | PR #9, `tests/test_cloudflare.py`, fixture `cloudflare_flux2_400_multipart.json` | no |
+| Output extension follows the returned bytes; sidecar gains `format` / `mime` | PR #10, `tests/test_cli_output.py` | yes |
+| `doctor` reports `NEEDS ACCOUNT` when a token file exists but no account is selected | PR #11, `tests/test_cli.py` | no |
+| Install metadata and gitignored sidecar from `install.sh` | PR #12, `tests/test_install.py` | yes |
+| Bounded retry of transient provider errors, `--no-retry` | PR #13, `tests/test_retry.py` | yes |
+| Opaque-output warning and the full-bleed-then-mask recipe | PR #14, `skills/imagine/SKILL.md` | no |
 
 Test state: `uv run pytest -q` gives 51 passed at this sha, all on recorded or
 mocked provider responses (the rule in `CLAUDE.md`). The runtime has no
@@ -37,25 +38,28 @@ Not evidenced:
   invokes it (`package.json` `check:ci`).
 - The multipart reference-image field name `input_image_<n>` is marked
   "unverified against the live schema" in `imagine/providers/cloudflare.py`.
+- PRs #9, #11 and #14 merged without a `CHANGELOG.md` entry; the 0.2.0
+  release notes need them written first.
 
-Tracker: issues #1 to #6 are closed as completed. The only open issue, #16, is
-an automated digest and not a work item. One open pull request, #7.
+Tracker: issues #1 to #6 are closed as completed, and the four Now items below
+are filed as #18 to #21. Issue #16 is an automated digest and not a work item.
+One open pull request, #7.
 
 ## Now
 
-Each of these can start today and is one pull request. None has an issue yet.
+Each of these is filed as an issue and is one pull request.
 
-1. **Options that do not apply to the selected provider are dropped silently.**
+1. **Options that do not apply to the selected provider are dropped silently.** (#18)
    `--param` is read but never passed to Gemini models; `--size WxH` is ignored
    by Gemini and `--size 1K/2K/4K` by Cloudflare (`imagine/cli.py`
    `_generate`). `--ar` on a Cloudflare model already prints a note.
    Done when each of those three cases prints one `imagine: note:` line on
    stderr naming the ignored option, with a test per case.
-2. **The sidecar does not record `--param` values.** Two runs that differ only
+2. **The sidecar does not record `--param` values.** (#19) Two runs that differ only
    in `--param steps=N` or a seed write identical provenance.
    Done when the sidecar and the `--json` record carry a `params` object (empty
    when none were given) and a test asserts it.
-3. **`fit` can write PNG bytes under a non-PNG name, and is untested.** The
+3. **`fit` can write PNG bytes under a non-PNG name, and is untested.** (#20) The
    byte-budget pass writes `png8:<dest>` whatever the destination extension, and
    the default destination reuses the source suffix, so fitting a `.jpg` (which
    `gen` now produces) yields a mislabelled file; the `--out` help text says
@@ -64,7 +68,7 @@ Each of these can start today and is one pull request. None has an issue yet.
    with `--max-kb` is either honoured in that format or refused with a clear
    message, and `tests/test_postprocess.py` covers the command built for
    `contain`, `cover`, and the byte-budget walk without needing `magick`.
-4. **`fit` output has no sidecar.** The README calls the image plus sidecar
+4. **`fit` output has no sidecar.** (#21) The README calls the image plus sidecar
    "the artifact", but a fitted file carries no provenance.
    Done when `fit` writes `<dest>.json` with tool version, operation
    parameters, source path, source sha256 and output sha256, links the source
@@ -114,8 +118,8 @@ Each of these can start today and is one pull request. None has an issue yet.
   installed. Waits on a maintainer decision to adopt or close. The runtime has
   no dependencies and the only development dependency is `pytest`.
 
-Nothing in the tracker is labelled ready for work today; the four Now items
-become dispatchable once filed.
+All four Now items are filed: #18 and #19 are merged (PRs #25 and #24), #20 is
+curated with an open pull request in review, and #21 is curated and open.
 
 ## Not planned
 
