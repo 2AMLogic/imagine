@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `fit` now writes a provenance sidecar next to the fitted image
+  (`<dest>.json`, e.g. `logo-fit.png.json`): `tool`, `operation: "fit"`,
+  `size`/`max_kb`/`mode`, the source path and its sha256, the output's sha256,
+  `created`, and — when the source has its own sidecar — its
+  `prompt`/`provider`/`model`/`alias` under `source_record` (`null` when the
+  source sidecar is absent, unreadable, or not valid JSON; a malformed source
+  sidecar never fails the fit). stdout is unchanged: the destination path only.
 - **Behaviour change:** `fit` now defaults the destination to `<name>-fit.png`
   regardless of the source extension (the `--out` help text already promised
   this, and the `--max-kb` byte-budget pass only emits PNG8). `--max-kb` with a
