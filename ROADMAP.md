@@ -113,13 +113,11 @@ Each of these is filed as an issue and is one pull request.
   (`CLAUDE.md`), so this waits for an attended run of
   `imagine edit <image> "<instruction>" -m flux-2-klein`; if the field name is
   wrong, the fix ships with a recorded fixture.
-- **PR #7, Renovate configuration.** Open since 2026-09-21 with no review
-  label; its own description says it is inert until the Renovate app is
-  installed. Waits on a maintainer decision to adopt or close. The runtime has
-  no dependencies and the only development dependency is `pytest`.
+- **PR #7, Renovate configuration.** Opened 2026-09-21 with no review label;
+  closed unmerged on 2026-11-15 — Renovate not adopted.
 
-All four Now items are filed: #18 and #19 are merged (PRs #25 and #24), #20 is
-curated with an open pull request in review, and #21 is curated and open.
+As of 2026-11-15 08:23Z, all four Now items are filed; see #18 to #21 for
+current state.
 
 ## Not planned
 
