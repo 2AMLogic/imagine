@@ -260,7 +260,7 @@ def cmd_fit(args: argparse.Namespace) -> int:
     src = Path(args.image)
     if not src.is_file():
         raise SystemExit(f"imagine: no such file: {src}")
-    dest = Path(args.out) if args.out else src.with_name(f"{src.stem}-fit{src.suffix}")
+    dest = Path(args.out) if args.out else src.with_name(f"{src.stem}-fit.png")
     fit_image(src, dest, size=args.size, max_kb=args.max_kb, mode=args.mode)
     print(dest)
     return 0
@@ -314,7 +314,8 @@ def main(argv: list[str] | None = None) -> int:
     p_fit.add_argument("--size", help="target WxH, e.g. 320x132")
     p_fit.add_argument("--max-kb", type=int, help="byte budget in KB")
     p_fit.add_argument("--mode", choices=("contain", "cover"), default="contain",
-                       help="contain = letterbox on transparency, cover = center-crop")
+                       help="contain = letterbox (transparent for .png/.webp, white otherwise), "
+                            "cover = center-crop")
     p_fit.add_argument("--out", "-o", help="output path (default: <name>-fit.png)")
     p_fit.set_defaults(func=cmd_fit)
 

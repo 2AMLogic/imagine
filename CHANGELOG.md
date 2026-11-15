@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **Behaviour change:** `fit` now defaults the destination to `<name>-fit.png`
+  regardless of the source extension (the `--out` help text already promised
+  this, and the `--max-kb` byte-budget pass only emits PNG8). `--max-kb` with a
+  non-PNG `--out` is refused up front with a clear message and writes nothing,
+  and `contain` letterboxes onto white for alpha-less destinations (`.jpg`)
+  instead of `-background none`.
 - `gen` / `edit` now print a one-line `imagine: note:` on stderr when an option
   does not apply to the selected provider: `--param` or `--size WxH` on a Gemini
   model, and `--size 1K/2K/4K` on a Cloudflare model. Generation still proceeds
