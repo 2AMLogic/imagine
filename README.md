@@ -44,6 +44,8 @@ One key per provider, resolved from (in order) the process environment, `~/.conf
 
 Every generated `foo.png` is written next to a `foo.png.json` sidecar recording tool version, provider, model, prompt, references, `--param` values (`params`), sha256, and timestamp. The pair is the artifact; downstream workflows (Anvil threads, brand repos) should move them together.
 
+`gen` / `edit` use two streams. **stdout is the machine stream**: without `--json` it carries one written-image path per line; with `--json` it carries exactly one JSON array of metadata records (each record includes `path`). **stderr is diagnostics only** — applicability notes, format-fallback notes, retry lines — so `json.loads(stdout)` succeeds on any successful run, whatever stderr says.
+
 ## Claude Code skills
 
 ```bash

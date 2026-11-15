@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **Behaviour change:** `gen` / `edit` `--json` now prints the metadata records
+  array to **stdout** instead of stderr, and suppresses the per-image path
+  lines when it is set (each record already carries `path`). stdout is the
+  machine stream — one JSON document under `--json`, path lines otherwise — and
+  stderr is diagnostics only (applicability notes, format fallback, retries),
+  so `json.loads(stdout)` works no matter what diagnostics fire.
 - **Behaviour change:** `fit` now defaults the destination to `<name>-fit.png`
   regardless of the source extension (the `--out` help text already promised
   this, and the `--max-kb` byte-budget pass only emits PNG8). `--max-kb` with a

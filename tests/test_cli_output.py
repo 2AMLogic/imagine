@@ -11,20 +11,20 @@ WEBP = b"RIFF\x04\x00\x00\x00WEBPVP8 "
 JUNK = b"not an image"
 
 
-def _args(out, n=1, param=None, json_out=False, model="nano-banana"):
+def _args(out, n=1, param=None, json_out=False, model="nano-banana", ar=None):
     return SimpleNamespace(
-        model=model, ref=None, size=None, param=param, n=n, ar=None,
+        model=model, ref=None, size=None, param=param, n=n, ar=ar,
         out=out, json=json_out, cf_account=None, no_retry=False,
     )
 
 
 @pytest.fixture
 def run(monkeypatch):
-    def _run(out, batches, n=1, param=None, json_out=False):
+    def _run(out, batches, n=1, param=None, json_out=False, ar=None):
         monkeypatch.setattr(cli.config, "gemini_key", lambda: "fake")
         monkeypatch.setattr(cli.gemini, "generate", lambda *a, **k: list(batches))
         return cli._generate(
-            _args(str(out) if out else None, n, param, json_out), "tiny red dot", []
+            _args(str(out) if out else None, n, param, json_out, ar=ar), "tiny red dot", []
         )
     return _run
 
@@ -123,8 +123,8 @@ def test_params_empty_dict_when_no_flags(run, tmp_path):
 
 def test_params_in_json_record(run, tmp_path, capsys):
     run(tmp_path / "out.png", [PNG], param=["steps=4", "sampler=euler"], json_out=True)
-    err = capsys.readouterr().err
-    records = json.loads(err[err.index("["):])
+    cap = capsys.readouterr()
+    records = json.loads(cap.out)
     assert len(records) == 1
     assert records[0]["params"] == {"steps": 4, "sampler": "euler"}
     assert isinstance(records[0]["params"]["steps"], int)
@@ -132,8 +132,75 @@ def test_params_in_json_record(run, tmp_path, capsys):
 
 def test_params_empty_in_json_record(run, tmp_path, capsys):
     run(tmp_path / "out.png", [PNG], json_out=True)
-    records = json.loads(capsys.readouterr().err)
+    records = json.loads(capsys.readouterr().out)
     assert records[0]["params"] == {}
+
+
+# --- --json stdout contract (issue #31) ----------------------------------
+
+# Without --json, stdout is the path stream, untouched by this change:
+# test_jpeg_renamed_with_sidecar / test_n_naming_uses_per_image_extension
+# assert one path line per image and nothing else.
+
+
+def test_json_stdout_parses_with_applicability_note(run, tmp_path, capsys):
+    """Probe A: --ar 99:1 on a Gemini model; the note goes to stderr only."""
+    run(tmp_path / "out.png", [PNG], json_out=True, ar="99:1")
+    cap = capsys.readouterr()
+    records = json.loads(cap.out)
+    assert records[0]["path"] == str(tmp_path / "out.png")
+    assert "not a documented aspect ratio" in cap.err
+
+
+def test_json_stdout_parses_with_format_fallback(run, tmp_path, capsys):
+    """Probe B: JPEG bytes for -o out.png; record's path is the real .jpg."""
+    run(tmp_path / "out.png", [JPEG], json_out=True)
+    cap = capsys.readouterr()
+    records = json.loads(cap.out)
+    assert records[0]["path"] == str(tmp_path / "out.jpg")
+    assert (tmp_path / "out.jpg").read_bytes() == JPEG
+    assert "provider returned JPEG" in cap.err
+
+
+def test_json_stdout_parses_with_bracket_in_path(run, tmp_path, capsys):
+    """Probe C: '[' in the path; defeats any slice-from-'[' stderr workaround."""
+    run(tmp_path / "c[draft].png", [JPEG], json_out=True)
+    cap = capsys.readouterr()
+    records = json.loads(cap.out)
+    assert records[0]["path"] == str(tmp_path / "c[draft].jpg")
+    assert (tmp_path / "c[draft].jpg").exists()
+
+
+def test_json_n2_is_one_array_of_two_records(run, tmp_path, capsys):
+    """--n > 1 with a note: one stderr note per invocation, one stdout array."""
+    run(tmp_path / "out.png", [PNG], n=2, json_out=True, ar="99:1")
+    cap = capsys.readouterr()
+    records = json.loads(cap.out)  # a second array or stray line would fail here
+    assert [r["path"] for r in records] == [
+        str(tmp_path / "out-1.png"), str(tmp_path / "out-2.png")
+    ]
+    assert cap.err.count("imagine: note:") == 1
+
+
+def test_json_unknown_format_record_on_stdout(run, tmp_path, capsys):
+    run(tmp_path / "out.png", [JUNK], json_out=True)
+    cap = capsys.readouterr()
+    records = json.loads(cap.out)
+    assert records[0]["path"] == str(tmp_path / "out.png")
+    assert records[0]["format"] == "unknown" and records[0]["mime"] is None
+
+
+def test_edit_json_stdout_parse(tmp_path, capsys, monkeypatch):
+    """`edit` routes through _generate, so the stdout contract holds there too."""
+    monkeypatch.setattr(cli.config, "gemini_key", lambda: "fake")
+    monkeypatch.setattr(cli.gemini, "generate", lambda *a, **k: [PNG])
+    (tmp_path / "in.png").write_bytes(PNG)
+    args = _args(str(tmp_path / "out.png"), json_out=True, model="nano-banana-pro")
+    args.image = str(tmp_path / "in.png")
+    args.instruction = "brighten"
+    assert cli.cmd_edit(args) == 0
+    records = json.loads(capsys.readouterr().out)
+    assert records[0]["path"] == str(tmp_path / "out.png")
 
 
 def test_existing_sidecar_fields_unchanged(run, tmp_path):
