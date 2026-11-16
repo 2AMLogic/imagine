@@ -32,7 +32,6 @@ _None._
 Issues currently being built (`loom:building`).
 
 - **#28**: Collapse the three hand-maintained version literals to one source of truth
-- **#37**: fit: in-place fit (-o pointing at the source) records a self-referential source_sha256
 - **#42**: fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency
 
 ## PRs Awaiting Review
@@ -45,14 +44,13 @@ PRs waiting on Judge (`loom:review-requested`).
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-- **#44**: fix: hash fit source before fit_image writes dest
+_None._
 
 ## Proposed
 
 Issues carrying `loom:curated`.
 
 - **#33**: fit: confirm the actual letterbox colour magick renders for an alpha-less destination *(curated)*
-- **#37**: fit: in-place fit (-o pointing at the source) records a self-referential source_sha256 *(curated)*
 - **#42**: fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency *(curated)*
 
 ## Proposed (Architect / Hermit)
@@ -71,10 +69,10 @@ _None._
 | Very important | 0 |
 | Important | 1 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 3 |
+| In Progress (`loom:building`) | 2 |
 | PRs awaiting review | 1 |
-| Approved PRs awaiting merge | 1 |
-| Curated | 3 |
+| Approved PRs awaiting merge | 0 |
+| Curated | 2 |
 | Architect / Hermit proposals | 0 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->
