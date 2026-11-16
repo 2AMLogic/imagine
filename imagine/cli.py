@@ -125,6 +125,8 @@ def _applicability_notes(
                          "use --size 1K/2K/4K for Gemini models")
         if args.ar and args.ar not in gemini.KNOWN_ASPECT_RATIOS:
             notes.append(f"'{args.ar}' is not a documented aspect ratio; passing through")
+        if args.cf_account:
+            notes.append("--cf-account is a Cloudflare option; Gemini models ignore it")
     else:
         if args.ar:
             notes.append("--ar is a Gemini option; use --size WxH for Cloudflare models")
