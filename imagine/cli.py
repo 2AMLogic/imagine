@@ -264,6 +264,7 @@ def cmd_fit(args: argparse.Namespace) -> int:
     if not src.is_file():
         raise SystemExit(f"imagine: no such file: {src}")
     dest = Path(args.out) if args.out else src.with_name(f"{src.stem}-fit.png")
+    source_sha256 = hashlib.sha256(src.read_bytes()).hexdigest()
     fit_image(src, dest, size=args.size, max_kb=args.max_kb, mode=args.mode)
     source_record = None
     source_sidecar = src.with_suffix(src.suffix + ".json")
@@ -281,7 +282,7 @@ def cmd_fit(args: argparse.Namespace) -> int:
         "max_kb": args.max_kb,
         "mode": args.mode,
         "source": str(src),
-        "source_sha256": hashlib.sha256(src.read_bytes()).hexdigest(),
+        "source_sha256": source_sha256,
         "sha256": hashlib.sha256(dest.read_bytes()).hexdigest(),
         "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "source_record": source_record,
