@@ -271,3 +271,45 @@ def test_fit_stdout_is_destination_path_only(fake_fit, tmp_path, capsys):
     cap = capsys.readouterr()
     assert cap.out == str(tmp_path / "in-fit.png") + "\n"
     assert cap.err == ""
+
+
+# --- fit in-place source_sha256 (issue #37) ---
+
+
+def test_fit_in_place_source_sha256_is_prefit_bytes(fake_fit, tmp_path):
+    """-o pointing at the source must record the PRE-fit source hash."""
+    import hashlib
+
+    src = tmp_path / "logo.png"
+    src.write_bytes(PNG)
+    src.with_suffix(src.suffix + ".json").write_text(json.dumps({
+        "prompt": "a tiny red dot", "provider": "gemini",
+        "model": "gemini-2.5-flash-image", "alias": "nano-banana",
+    }))
+    assert cli.main(["fit", str(src), "-o", str(src)]) == 0
+    assert src.read_bytes() == FITTED_PNG
+    meta = json.loads((tmp_path / "logo.png.json").read_text())
+    assert meta["source_sha256"] == hashlib.sha256(PNG).hexdigest()
+    assert meta["source_sha256"] != hashlib.sha256(FITTED_PNG).hexdigest()
+    assert meta["sha256"] == hashlib.sha256(FITTED_PNG).hexdigest()
+    assert set(meta) == FIT_RECORD_KEYS
+    assert meta["source_record"] == {
+        "prompt": "a tiny red dot", "provider": "gemini",
+        "model": "gemini-2.5-flash-image", "alias": "nano-banana",
+    }
+
+
+def test_fit_in_place_alias_spelling_records_prefit_hash(fake_fit, tmp_path):
+    """-o given as sub/../<name>.png aliases the source; hash must not depend on path comparison."""
+    import hashlib
+
+    (tmp_path / "sub").mkdir()
+    src = tmp_path / "logo.png"
+    src.write_bytes(PNG)
+    alias = tmp_path / "sub" / ".." / "logo.png"
+    assert cli.main(["fit", str(src), "-o", str(alias)]) == 0
+    assert src.read_bytes() == FITTED_PNG
+    meta = json.loads((tmp_path / "logo.png.json").read_text())
+    assert meta["source_sha256"] == hashlib.sha256(PNG).hexdigest()
+    assert meta["source_sha256"] != hashlib.sha256(FITTED_PNG).hexdigest()
+    assert meta["sha256"] == hashlib.sha256(FITTED_PNG).hexdigest()
