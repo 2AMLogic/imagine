@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `fit` `contain` into an alpha-less destination now appends `-alpha remove`
+  after the letterbox, compositing any transparency the source carries against
+  the white background explicitly instead of leaving the result to the
+  destination encoder. `.png`/`.webp` destinations, `cover`, and the no-`size`
+  passthrough are unchanged.
 - `fit` now writes a provenance sidecar next to the fitted image
   (`<dest>.json`, e.g. `logo-fit.png.json`): `tool`, `operation: "fit"`,
   `size`/`max_kb`/`mode`, the source path and its sha256, the output's sha256,
