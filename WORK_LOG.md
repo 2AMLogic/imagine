@@ -4,6 +4,8 @@ Chronological record of merged PRs and closed issues, maintained by the Guide ro
 
 ### 2026-11-16
 
+- **PR #44**: fix: hash fit source before fit_image writes dest
+- **Issue #37** (closed): fit: in-place fit (-o pointing at the source) records a self-referential source_sha256
 - **PR #17**: docs: roadmap as of 2026-11-13
 - **PR #46**: tests: hoist duplicated cli.fit_image double into shared conftest fixtures
 - **Issue #43** (closed): tests: hoist the duplicated cli.fit_image double into a shared conftest fixture
