@@ -17,10 +17,11 @@ AR_IS_GEMINI = "imagine: note: --ar is a Gemini option; use --size WxH for Cloud
 UNDOCUMENTED_AR = "imagine: note: '7:3' is not a documented aspect ratio; passing through"
 
 
-def _args(out, *, model="nano-banana", size=None, param=None, ar=None, n=1):
+def _args(out, *, model="nano-banana", size=None, param=None, ar=None, n=1,
+          cf_account=None):
     return SimpleNamespace(
         model=model, ref=None, size=size, param=param, n=n, ar=ar,
-        out=out, json=False, cf_account=None, no_retry=False,
+        out=out, json=False, cf_account=cf_account, no_retry=False,
     )
 
 
@@ -72,6 +73,66 @@ def test_image_size_on_cloudflare_notes_once(run, tmp_path, capsys):
         "use --size WxH for Cloudflare models"
     ]
     assert (tmp_path / "out.png").exists()
+
+
+# --- the newly-signalled --cf-account case -------------------------------
+
+
+CF_ACCOUNT_NOTE = ("imagine: note: --cf-account is a Cloudflare option; "
+                   "Gemini models ignore it")
+
+
+def test_cf_account_on_gemini_notes_once(run, tmp_path, capsys):
+    assert run(tmp_path / "out.png", model="nano-banana",
+               cf_account="some-account") == 0
+    notes = _notes(capsys.readouterr().err)
+    assert notes == [CF_ACCOUNT_NOTE]
+    # generation still proceeded: image and sidecar written
+    assert (tmp_path / "out.png").read_bytes() == PNG
+    assert (tmp_path / "out.png.json").exists()
+
+
+def test_cf_account_noted_once_for_n3(run, tmp_path, capsys):
+    assert run(tmp_path / "out.png", model="nano-banana",
+               cf_account="some-account", n=3) == 0
+    cap = capsys.readouterr()
+    assert cap.err.count("imagine: note:") == 1
+    assert len(cap.out.split()) == 3
+
+
+def test_cf_account_with_other_dropped_options_notes_last(run, tmp_path, capsys):
+    assert run(
+        tmp_path / "out.png", model="nano-banana",
+        param=["steps=4"], size="1920x1080", cf_account="some-account",
+    ) == 0
+    assert _notes(capsys.readouterr().err) == [
+        "imagine: note: --param is a Cloudflare option; Gemini models ignore it",
+        "imagine: note: --size WxH is a Cloudflare option; "
+        "use --size 1K/2K/4K for Gemini models",
+        CF_ACCOUNT_NOTE,
+    ]
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        # the flag is consumed on the Cloudflare path, so stay silent
+        {"model": "flux-schnell", "cf_account": "some-account"},
+        # empty string is falsey — no note
+        {"model": "nano-banana", "cf_account": ""},
+    ],
+)
+def test_cf_account_no_note_when_not_dropped(run, tmp_path, capsys, kwargs):
+    assert run(tmp_path / "out.png", **kwargs) == 0
+    assert _notes(capsys.readouterr().err) == []
+
+
+def test_env_only_cf_account_silent(run, monkeypatch, tmp_path, capsys):
+    """`IMAGINE_CF_ACCOUNT` resolves inside cloudflare_credentials, never into
+    args.cf_account — an ambient env default does not note."""
+    monkeypatch.setenv("IMAGINE_CF_ACCOUNT", "some-account")
+    assert run(tmp_path / "out.png", model="nano-banana") == 0
+    assert _notes(capsys.readouterr().err) == []
 
 
 # --- the two pre-existing notes, wording pinned (AC5) --------------------
@@ -249,4 +310,22 @@ def test_edit_gets_the_same_notes(monkeypatch, tmp_path, capsys):
     assert _notes(capsys.readouterr().err) == [
         "imagine: note: --size WxH is a Cloudflare option; "
         "use --size 1K/2K/4K for Gemini models"
+    ]
+
+
+def test_edit_gets_the_cf_account_note(monkeypatch, tmp_path, capsys):
+    monkeypatch.setattr(cli.config, "gemini_key", lambda: "fake")
+    monkeypatch.setattr(cli.gemini, "generate", lambda *a, **k: [PNG])
+    source = tmp_path / "in.png"
+    source.write_bytes(PNG)
+    args = SimpleNamespace(
+        model="nano-banana", image=str(source), instruction="make it blue", ref=None,
+        size="1920x1080", param=None, n=1, ar=None, out=str(tmp_path / "out.png"),
+        json=False, cf_account="some-account", no_retry=False,
+    )
+    assert cli.cmd_edit(args) == 0
+    assert _notes(capsys.readouterr().err) == [
+        "imagine: note: --size WxH is a Cloudflare option; "
+        "use --size 1K/2K/4K for Gemini models",
+        CF_ACCOUNT_NOTE,
     ]
