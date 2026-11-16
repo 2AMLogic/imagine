@@ -44,6 +44,8 @@ One key per provider, resolved from (in order) the process environment, `~/.conf
 
 Every generated `foo.png` is written next to a `foo.png.json` sidecar recording tool version, provider, model, prompt, references, `--param` values (`params`), sha256, and timestamp. `imagine fit` output carries a sidecar the same way: `foo-fit.png.json` records `tool`, `operation: "fit"`, the `--size`/`--max-kb`/`--mode` arguments, the source path and its sha256, the output's sha256, and — when the source is itself a generated image — the source's `prompt`, `provider`, `model` and `alias` under `source_record` (`null` when the source has no readable sidecar). The pair is the artifact; downstream workflows (Anvil threads, brand repos) should move them together.
 
+`gen` / `edit` use two streams. **stdout is the machine stream**: without `--json` it carries one written-image path per line; with `--json` it carries exactly one JSON array of metadata records (each record includes `path`). **stderr is diagnostics only** — applicability notes, format-fallback notes, retry lines — so `json.loads(stdout)` succeeds on any successful run, whatever stderr says.
+
 ## Claude Code skills
 
 ```bash

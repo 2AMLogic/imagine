@@ -203,9 +203,10 @@ def _generate(args: argparse.Namespace, prompt: str, refs: list[Path]) -> int:
         }
         path.with_suffix(path.suffix + ".json").write_text(json.dumps(record, indent=2) + "\n")
         records.append({"path": str(path), **record})
-        print(path)
+        if not args.json:
+            print(path)
     if args.json:
-        print(json.dumps(records, indent=2), file=sys.stderr)
+        print(json.dumps(records, indent=2))
     return 0
 
 
@@ -304,7 +305,9 @@ def _add_generation_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--no-retry", action="store_true",
                         help="single attempt; don't retry transient provider errors "
                              "(or set IMAGINE_NO_RETRY=1)")
-    parser.add_argument("--json", action="store_true", help="print metadata records to stderr")
+    parser.add_argument("--json", action="store_true",
+                        help="print metadata records as a JSON array to stdout "
+                             "(replaces the per-image path lines; diagnostics stay on stderr)")
 
 
 def main(argv: list[str] | None = None) -> int:
