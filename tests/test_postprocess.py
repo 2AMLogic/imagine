@@ -66,6 +66,10 @@ def test_contain_background_by_dest_suffix(tmp_path, monkeypatch):
         (".jpg", "white", ["-alpha", "remove"]),
         (".png", "none", []),
         (".webp", "none", []),
+        (".avif", "none", []),
+        (".tif", "none", []),
+        (".tiff", "none", []),
+        (".gif", "white", ["-alpha", "remove"]),
     ):
         dest = tmp_path / f"out{suffix}"
         calls = _fake_magick(monkeypatch, dest, 100, 100)
@@ -94,6 +98,9 @@ def test_contain_suffix_match_is_case_insensitive(tmp_path, monkeypatch):
     for suffix, bg, flatten in (
         (".JPG", "white", ["-alpha", "remove"]),
         (".PNG", "none", []),
+        (".AVIF", "none", []),
+        (".TIF", "none", []),
+        (".TIFF", "none", []),
     ):
         dest = tmp_path / f"out{suffix}"
         calls = _fake_magick(monkeypatch, dest, 100, 100)

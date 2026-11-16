@@ -338,8 +338,8 @@ def main(argv: list[str] | None = None) -> int:
     p_fit.add_argument("--size", help="target WxH, e.g. 320x132")
     p_fit.add_argument("--max-kb", type=int, help="byte budget in KB")
     p_fit.add_argument("--mode", choices=("contain", "cover"), default="contain",
-                       help="contain = letterbox (transparent for .png/.webp, white otherwise), "
-                            "cover = center-crop")
+                       help="contain = letterbox (transparent for .png/.webp/.avif/"
+                            ".tif/.tiff, white otherwise incl. .gif), cover = center-crop")
     p_fit.add_argument("--out", "-o", help="output path (default: <name>-fit.png)")
     p_fit.set_defaults(func=cmd_fit)
 
