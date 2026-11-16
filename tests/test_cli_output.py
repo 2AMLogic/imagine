@@ -173,31 +173,13 @@ def test_params_identical_across_n(run, tmp_path):
 
 # --- fit provenance sidecar (issue #21) ---
 
-# Distinct from PNG so the fitted output's sha256 differs from the source's.
-FITTED_PNG = b"\x89PNG\r\n\x1a\n" + b"\xff" * 8
-
 FIT_RECORD_KEYS = {
     "tool", "operation", "size", "max_kb", "mode", "source", "source_sha256",
     "sha256", "created", "source_record",
 }
 
 
-@pytest.fixture
-def fake_fit(monkeypatch):
-    """Replace cli.fit_image: write known bytes to dest; magick never invoked."""
-    calls = []
-
-    def _fit(src, dest, size=None, max_kb=None, mode=None):
-        dest.write_bytes(FITTED_PNG)
-        calls.append({"src": src, "dest": dest, "size": size,
-                      "max_kb": max_kb, "mode": mode})
-        return dest
-
-    monkeypatch.setattr(cli, "fit_image", _fit)
-    return calls
-
-
-def test_fit_sidecar_fields_with_source_sidecar(fake_fit, tmp_path):
+def test_fit_sidecar_fields_with_source_sidecar(fit_calls, fitted_png, tmp_path):
     import hashlib
 
     src = tmp_path / "photo.png"
@@ -218,7 +200,7 @@ def test_fit_sidecar_fields_with_source_sidecar(fake_fit, tmp_path):
     assert meta["mode"] == "contain"
     assert meta["source"] == str(src)
     assert meta["source_sha256"] == hashlib.sha256(PNG).hexdigest()
-    assert meta["sha256"] == hashlib.sha256(FITTED_PNG).hexdigest()
+    assert meta["sha256"] == hashlib.sha256(fitted_png).hexdigest()
     assert meta["created"]
     assert meta["source_record"] == {
         "prompt": "a tiny red dot", "provider": "gemini",
@@ -226,7 +208,7 @@ def test_fit_sidecar_fields_with_source_sidecar(fake_fit, tmp_path):
     }
 
 
-def test_fit_source_record_none_without_source_sidecar(fake_fit, tmp_path):
+def test_fit_source_record_none_without_source_sidecar(fit_calls, tmp_path):
     src = tmp_path / "bare.png"
     src.write_bytes(PNG)
     assert cli.main(["fit", str(src), "--size", "320x132"]) == 0
@@ -234,7 +216,7 @@ def test_fit_source_record_none_without_source_sidecar(fake_fit, tmp_path):
     assert meta["source_record"] is None
 
 
-def test_fit_malformed_source_sidecar_degrades_to_null(fake_fit, tmp_path):
+def test_fit_malformed_source_sidecar_degrades_to_null(fit_calls, tmp_path):
     src = tmp_path / "broken.png"
     src.write_bytes(PNG)
     src.with_suffix(src.suffix + ".json").write_text("{not json")
@@ -243,7 +225,7 @@ def test_fit_malformed_source_sidecar_degrades_to_null(fake_fit, tmp_path):
     assert meta["source_record"] is None
 
 
-def test_fit_source_record_missing_keys_are_null(fake_fit, tmp_path):
+def test_fit_source_record_missing_keys_are_null(fit_calls, tmp_path):
     src = tmp_path / "partial.png"
     src.write_bytes(PNG)
     src.with_suffix(src.suffix + ".json").write_text(json.dumps({"prompt": "just a prompt"}))
@@ -254,17 +236,17 @@ def test_fit_source_record_missing_keys_are_null(fake_fit, tmp_path):
     }
 
 
-def test_fit_explicit_out_sidecar_next_to_dest(fake_fit, tmp_path):
+def test_fit_explicit_out_sidecar_next_to_dest(fit_calls, fitted_png, tmp_path):
     src = tmp_path / "in.png"
     src.write_bytes(PNG)
     out = tmp_path / "sub" / "dir" / "logo.png"
     out.parent.mkdir(parents=True)
     assert cli.main(["fit", str(src), "-o", str(out)]) == 0
-    assert out.read_bytes() == FITTED_PNG
+    assert out.read_bytes() == fitted_png
     assert (tmp_path / "sub" / "dir" / "logo.png.json").is_file()
 
 
-def test_fit_stdout_is_destination_path_only(fake_fit, tmp_path, capsys):
+def test_fit_stdout_is_destination_path_only(fit_calls, tmp_path, capsys):
     src = tmp_path / "in.png"
     src.write_bytes(PNG)
     cli.main(["fit", str(src)])

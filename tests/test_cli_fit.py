@@ -2,8 +2,6 @@ import pytest
 
 from imagine import cli
 
-FITTED_PNG = b"\x89PNG\r\n\x1a\n" + b"\xff" * 8
-
 # Non-PNG sources are the guard: a .png source produces the same destination
 # under either naming rule, so it is kept only for completeness.
 DEFAULT_DEST_CASES = [
@@ -13,20 +11,6 @@ DEFAULT_DEST_CASES = [
     ("archive.tar.gz", "archive.tar-fit.png"),
     ("owl.png", "owl-fit.png"),
 ]
-
-
-@pytest.fixture
-def fit_calls(monkeypatch):
-    calls = []
-
-    def _fit(src, dest, size=None, max_kb=None, mode=None):
-        dest.write_bytes(FITTED_PNG)
-        calls.append({"src": src, "dest": dest, "size": size,
-                      "max_kb": max_kb, "mode": mode})
-        return dest
-
-    monkeypatch.setattr(cli, "fit_image", _fit)
-    return calls
 
 
 def _make_source(tmp_path, name):
