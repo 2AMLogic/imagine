@@ -4,6 +4,7 @@ Chronological record of merged PRs and closed issues, maintained by the Guide ro
 
 ### 2026-11-16
 
+- **PR #17**: docs: roadmap as of 2026-11-13
 - **PR #46**: tests: hoist duplicated cli.fit_image double into shared conftest fixtures
 - **Issue #43** (closed): tests: hoist the duplicated cli.fit_image double into a shared conftest fixture
 - **PR #36**: fix: print --json records to stdout; stderr stays diagnostics-only
