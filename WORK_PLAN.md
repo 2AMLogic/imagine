@@ -19,19 +19,21 @@ _None._
 
 `loom:important`; taken before unlabelled work.
 
+- **#21**: fit: write a provenance sidecar for the fitted image
 - **#22**: Deduplicate the Cloudflare credentials-missing hint: gen still prints the pre-#4 message
 
 ## Ready
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#19**: gen/edit: record --param values in the provenance sidecar
+- **#28**: Collapse the three hand-maintained version literals to one source of truth
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
-_None._
+- **#20**: fit: stop writing PNG bytes under a non-PNG name, and add tests for postprocess
+- **#22**: Deduplicate the Cloudflare credentials-missing hint: gen still prints the pre-#4 message
 
 ## PRs Awaiting Review
 
@@ -49,13 +51,12 @@ _None._
 
 Issues carrying `loom:curated`.
 
-- **#18**: gen/edit: print a note when --param or --size does not apply to the selected provider *(curated)*
-- **#19**: gen/edit: record --param values in the provenance sidecar *(curated)*
 - **#20**: fit: stop writing PNG bytes under a non-PNG name, and add tests for postprocess *(curated)*
+- **#21**: fit: write a provenance sidecar for the fitted image *(curated)*
 
 ## Proposed (Architect / Hermit)
 
-- **#22**: Deduplicate the Cloudflare credentials-missing hint: gen still prints the pre-#4 message *(hermit)*
+_None._
 
 ## Epics
 
@@ -67,12 +68,12 @@ _None._
 |------|-------|
 | Operator merge-risk holds | 0 |
 | Very important | 1 |
-| Important | 1 |
+| Important | 2 |
 | Ready (`loom:issue`) | 1 |
-| In Progress (`loom:building`) | 0 |
+| In Progress (`loom:building`) | 2 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 3 |
-| Architect / Hermit proposals | 1 |
+| Curated | 2 |
+| Architect / Hermit proposals | 0 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->

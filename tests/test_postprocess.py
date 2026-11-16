@@ -62,12 +62,46 @@ def test_cover_args_have_no_background(tmp_path, monkeypatch):
 def test_contain_background_by_dest_suffix(tmp_path, monkeypatch):
     src = tmp_path / "src.png"
     _patch_which(monkeypatch, "/usr/bin/magick")
-    for suffix, expected in ((".jpg", "white"), (".png", "none"), (".webp", "none")):
+    for suffix, bg, flatten in (
+        (".jpg", "white", ["-alpha", "remove"]),
+        (".png", "none", []),
+        (".webp", "none", []),
+    ):
         dest = tmp_path / f"out{suffix}"
         calls = _fake_magick(monkeypatch, dest, 100, 100)
         postprocess.fit(src, dest, size="320x132")
-        bg = calls[0][calls[0].index("-background") + 1]
-        assert bg == expected, f"{suffix}: got {bg!r}, want {expected!r}"
+        assert calls == [[
+            "magick", str(src), "-background", bg, "-resize", "320x132",
+            "-gravity", "center", "-extent", "320x132", *flatten, str(dest),
+        ]], f"{suffix}: {calls}"
+
+
+def test_contain_no_suffix_dest_gets_alpha_remove(tmp_path, monkeypatch):
+    src = tmp_path / "src.png"
+    dest = tmp_path / "out"
+    _patch_which(monkeypatch, "/usr/bin/magick")
+    calls = _fake_magick(monkeypatch, dest, 100, 100)
+    postprocess.fit(src, dest, size="320x132")
+    assert calls == [[
+        "magick", str(src), "-background", "white", "-resize", "320x132",
+        "-gravity", "center", "-extent", "320x132", "-alpha", "remove", str(dest),
+    ]]
+
+
+def test_contain_suffix_match_is_case_insensitive(tmp_path, monkeypatch):
+    src = tmp_path / "src.png"
+    _patch_which(monkeypatch, "/usr/bin/magick")
+    for suffix, bg, flatten in (
+        (".JPG", "white", ["-alpha", "remove"]),
+        (".PNG", "none", []),
+    ):
+        dest = tmp_path / f"out{suffix}"
+        calls = _fake_magick(monkeypatch, dest, 100, 100)
+        postprocess.fit(src, dest, size="320x132")
+        assert calls == [[
+            "magick", str(src), "-background", bg, "-resize", "320x132",
+            "-gravity", "center", "-extent", "320x132", *flatten, str(dest),
+        ]], f"{suffix}: {calls}"
 
 
 def test_plain_passthrough_without_size_or_budget(tmp_path, monkeypatch):

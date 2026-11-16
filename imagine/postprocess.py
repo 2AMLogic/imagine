@@ -29,8 +29,10 @@ def fit(
 ) -> Path:
     """Resize `src` to `size` (WxH) and/or compress under `max_kb`, into `dest`.
 
-    mode "contain" letterboxes (onto transparency for .png/.webp, white for
-    alpha-less formats); "cover" center-crops.
+    mode "contain" letterboxes (onto transparency for .png/.webp; white for
+    alpha-less formats, flattened with `-alpha remove` so any transparency the
+    source carries composites against the background instead of being left to
+    the destination encoder); "cover" center-crops.
     """
     if not shutil.which("magick"):
         raise SystemExit("imagine: `magick` (ImageMagick) is required for fit — brew install imagemagick")
@@ -50,6 +52,8 @@ def fit(
             bg = "none" if dest.suffix.lower() in _ALPHA_OK else "white"
             cmd += ["-background", bg, "-resize", size,
                     "-gravity", "center", "-extent", size]
+            if bg == "white":
+                cmd += ["-alpha", "remove"]
     cmd.append(str(dest))
     _run(cmd)
 

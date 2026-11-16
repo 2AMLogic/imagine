@@ -89,6 +89,25 @@ def _size_args(size: str | None) -> tuple[str | None, int | None, int | None]:
     raise SystemExit(f"imagine: --size must be 1K/2K/4K or WxH, got '{size}'")
 
 
+def _cloudflare_missing(accounts: list[str]) -> tuple[str, str]:
+    """Status label + guidance when Cloudflare credentials do not resolve.
+
+    One source of truth for both surfaces that report it (`doctor` and the
+    `gen` / `edit` path), so the selection guidance added for issue #4 cannot
+    drift between them again.
+    """
+    if accounts:
+        return "NEEDS ACCOUNT", (
+            f"found workers-ai.env for: {', '.join(accounts)}; select one with "
+            "--cf-account <name> or IMAGINE_CF_ACCOUNT=<name> "
+            "(selection is required even with a single account)"
+        )
+    return "MISSING", (
+        "add a Workers AI-scoped token file: ~/.cloudflare/<account>/workers-ai.env "
+        "(CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID)"
+    )
+
+
 def _applicability_notes(
     model: Model,
     args: argparse.Namespace,
@@ -106,6 +125,8 @@ def _applicability_notes(
                          "use --size 1K/2K/4K for Gemini models")
         if args.ar and args.ar not in gemini.KNOWN_ASPECT_RATIOS:
             notes.append(f"'{args.ar}' is not a documented aspect ratio; passing through")
+        if args.cf_account:
+            notes.append("--cf-account is a Cloudflare option; Gemini models ignore it")
     else:
         if args.ar:
             notes.append("--ar is a Gemini option; use --size WxH for Cloudflare models")
@@ -148,14 +169,8 @@ def _generate(args: argparse.Namespace, prompt: str, refs: list[Path]) -> int:
         else:
             token, account_id = config.cloudflare_credentials(args.cf_account)
             if not token or not account_id:
-                accounts = config.cloudflare_accounts()
-                hint = f" (accounts with workers-ai.env: {', '.join(accounts)})" if accounts else (
-                    " — add a Workers AI-scoped token at ~/.cloudflare/<account>/workers-ai.env"
-                )
-                raise SystemExit(
-                    f"imagine: Cloudflare credentials not found; set CLOUDFLARE_API_TOKEN + "
-                    f"CLOUDFLARE_ACCOUNT_ID or pass --cf-account{hint}"
-                )
+                _, hint = _cloudflare_missing(config.cloudflare_accounts())
+                raise SystemExit(f"imagine: Cloudflare credentials not found; {hint}")
             batches.extend(cf.generate(
                 model.model_id, prompt, token, account_id, refs=refs,
                 width=width, height=height, params=params,
@@ -230,20 +245,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
     token, account_id = config.cloudflare_credentials(args.cf_account)
     if not token or not account_id:
-        accounts = config.cloudflare_accounts()
-        if accounts:
-            status = "NEEDS ACCOUNT"
-            hint = (
-                f"found workers-ai.env for: {', '.join(accounts)}; select one with "
-                "--cf-account <name> or IMAGINE_CF_ACCOUNT=<name> "
-                "(selection is required even with a single account)"
-            )
-        else:
-            status = "MISSING"
-            hint = (
-                "add a Workers AI-scoped token file: ~/.cloudflare/<account>/workers-ai.env "
-                "(CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID)"
-            )
+        status, hint = _cloudflare_missing(config.cloudflare_accounts())
         print(f"cloudflare  {status}  {hint}")
         failures += 1
     else:
@@ -262,6 +264,28 @@ def cmd_fit(args: argparse.Namespace) -> int:
         raise SystemExit(f"imagine: no such file: {src}")
     dest = Path(args.out) if args.out else src.with_name(f"{src.stem}-fit.png")
     fit_image(src, dest, size=args.size, max_kb=args.max_kb, mode=args.mode)
+    source_record = None
+    source_sidecar = src.with_suffix(src.suffix + ".json")
+    if source_sidecar.is_file():
+        try:
+            meta = json.loads(source_sidecar.read_text())
+        except (OSError, ValueError):
+            meta = None
+        if isinstance(meta, dict):
+            source_record = {k: meta.get(k) for k in ("prompt", "provider", "model", "alias")}
+    record = {
+        "tool": f"imagine {__version__}",
+        "operation": "fit",
+        "size": args.size,
+        "max_kb": args.max_kb,
+        "mode": args.mode,
+        "source": str(src),
+        "source_sha256": hashlib.sha256(src.read_bytes()).hexdigest(),
+        "sha256": hashlib.sha256(dest.read_bytes()).hexdigest(),
+        "created": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "source_record": source_record,
+    }
+    dest.with_suffix(dest.suffix + ".json").write_text(json.dumps(record, indent=2) + "\n")
     print(dest)
     return 0
 
