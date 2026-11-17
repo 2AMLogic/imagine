@@ -325,7 +325,7 @@ def test_fit_stdout_is_destination_path_only(fit_calls, tmp_path, capsys):
 # --- fit in-place source_sha256 (issue #37) ---
 
 
-def test_fit_in_place_source_sha256_is_prefit_bytes(fake_fit, tmp_path):
+def test_fit_in_place_source_sha256_is_prefit_bytes(fit_calls, fitted_png, tmp_path):
     """-o pointing at the source must record the PRE-fit source hash."""
     import hashlib
 
@@ -336,11 +336,11 @@ def test_fit_in_place_source_sha256_is_prefit_bytes(fake_fit, tmp_path):
         "model": "gemini-2.5-flash-image", "alias": "nano-banana",
     }))
     assert cli.main(["fit", str(src), "-o", str(src)]) == 0
-    assert src.read_bytes() == FITTED_PNG
+    assert src.read_bytes() == fitted_png
     meta = json.loads((tmp_path / "logo.png.json").read_text())
     assert meta["source_sha256"] == hashlib.sha256(PNG).hexdigest()
-    assert meta["source_sha256"] != hashlib.sha256(FITTED_PNG).hexdigest()
-    assert meta["sha256"] == hashlib.sha256(FITTED_PNG).hexdigest()
+    assert meta["source_sha256"] != hashlib.sha256(fitted_png).hexdigest()
+    assert meta["sha256"] == hashlib.sha256(fitted_png).hexdigest()
     assert set(meta) == FIT_RECORD_KEYS
     assert meta["source_record"] == {
         "prompt": "a tiny red dot", "provider": "gemini",
@@ -348,7 +348,7 @@ def test_fit_in_place_source_sha256_is_prefit_bytes(fake_fit, tmp_path):
     }
 
 
-def test_fit_in_place_alias_spelling_records_prefit_hash(fake_fit, tmp_path):
+def test_fit_in_place_alias_spelling_records_prefit_hash(fit_calls, fitted_png, tmp_path):
     """-o given as sub/../<name>.png aliases the source; hash must not depend on path comparison."""
     import hashlib
 
@@ -357,8 +357,8 @@ def test_fit_in_place_alias_spelling_records_prefit_hash(fake_fit, tmp_path):
     src.write_bytes(PNG)
     alias = tmp_path / "sub" / ".." / "logo.png"
     assert cli.main(["fit", str(src), "-o", str(alias)]) == 0
-    assert src.read_bytes() == FITTED_PNG
+    assert src.read_bytes() == fitted_png
     meta = json.loads((tmp_path / "logo.png.json").read_text())
     assert meta["source_sha256"] == hashlib.sha256(PNG).hexdigest()
-    assert meta["source_sha256"] != hashlib.sha256(FITTED_PNG).hexdigest()
-    assert meta["sha256"] == hashlib.sha256(FITTED_PNG).hexdigest()
+    assert meta["source_sha256"] != hashlib.sha256(fitted_png).hexdigest()
+    assert meta["sha256"] == hashlib.sha256(fitted_png).hexdigest()
