@@ -4,6 +4,8 @@ Chronological record of merged PRs and closed issues, maintained by the Guide ro
 
 ### 2026-11-17
 
+- **PR #53**: fix(tests): point in-place fit tests at conftest fit_calls/fitted_png fixtures
+- **Issue #52** (closed): tests/test_cli_output.py: two in-place fit tests error on main — fake_fit fixture undefined
 - **PR #45**: fix: letterbox avif/tif/tiff onto transparency in contain fit
 - **Issue #42** (closed): fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency
 

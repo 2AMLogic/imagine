@@ -19,7 +19,7 @@ _None._
 
 `loom:important`; taken before unlabelled work.
 
-- **#42**: fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency
+_None._
 
 ## Ready
 
@@ -32,7 +32,6 @@ _None._
 Issues currently being built (`loom:building`).
 
 - **#28**: Collapse the three hand-maintained version literals to one source of truth
-- **#42**: fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency
 
 ## PRs Awaiting Review
 
@@ -50,8 +49,7 @@ _None._
 
 Issues carrying `loom:curated`.
 
-- **#33**: fit: confirm the actual letterbox colour magick renders for an alpha-less destination *(curated)*
-- **#42**: fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency *(curated)*
+- **#33**: fit: confirm the actual letterbox colour magick renders for an alpha-less destination *(curated)* *(held)*
 
 ## Proposed (Architect / Hermit)
 
@@ -67,12 +65,12 @@ _None._
 |------|-------|
 | Operator merge-risk holds | 0 |
 | Very important | 0 |
-| Important | 1 |
+| Important | 0 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 2 |
+| In Progress (`loom:building`) | 1 |
 | PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 2 |
+| Curated | 1 |
 | Architect / Hermit proposals | 0 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->
