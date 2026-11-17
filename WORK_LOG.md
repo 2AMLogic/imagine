@@ -2,6 +2,11 @@
 
 Chronological record of merged PRs and closed issues, maintained by the Guide role.
 
+### 2026-11-17
+
+- **PR #45**: fix: letterbox avif/tif/tiff onto transparency in contain fit
+- **Issue #42** (closed): fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency
+
 ### 2026-11-16
 
 - **PR #44**: fix: hash fit source before fit_image writes dest
