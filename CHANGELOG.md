@@ -5,8 +5,14 @@
 - `fit` `contain` into an alpha-less destination now appends `-alpha remove`
   after the letterbox, compositing any transparency the source carries against
   the white background explicitly instead of leaving the result to the
-  destination encoder. `.png`/`.webp` destinations, `cover`, and the no-`size`
-  passthrough are unchanged.
+  destination encoder. `.png`/`.webp`/`.avif`/`.tif`/`.tiff` destinations,
+  `cover`, and the no-`size` passthrough are unchanged.
+- `fit` `contain` now letterboxes onto transparency for `.avif`, `.tif` and
+  `.tiff` destinations as well as `.png`/`.webp`: all five carry an alpha
+  channel, and were previously flattened onto white. `.gif` stays on the white
+  arm — its transparency is binary, so an anti-aliased resize onto `none` would
+  fringe the edge pixels. `.jpg`, suffixless destinations, `cover` and the
+  no-`size` passthrough are unchanged.
 - `fit` now writes a provenance sidecar next to the fitted image
   (`<dest>.json`, e.g. `logo-fit.png.json`): `tool`, `operation: "fit"`,
   `size`/`max_kb`/`mode`, the source path and its sha256, the output's sha256,
