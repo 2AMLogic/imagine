@@ -1,6 +1,6 @@
 {
-  "loom_version": "0.19.1302",
-  "loom_commit": "d70c39dda609d184f36e44793e7cdb63475989a2",
+  "loom_version": "0.19.1306",
+  "loom_commit": "e7af83ea29897351d216cdfd4036ecf628cb96cc",
   "install_date": "2026-11-04",
   "installed_files": [
     ".loom/docs/observability.md",
@@ -180,8 +180,24 @@
     ".loom/scripts/tests/test-worktree-issue-lock.sh",
     ".loom/scripts/tests/test-worktree-nested-symlinks.sh",
     ".loom/scripts/tests/test-worktree-race-rescue.sh",
-    ".loom/scripts/tests/test-worktree-sentinel.sh"
+    ".loom/scripts/tests/test-worktree-sentinel.sh",
+    ".agents/skills/loom-doctor/SKILL.md",
+    ".agents/skills/loom-judge/SKILL.md",
+    ".claude/commands/loom/doctor.md",
+    ".claude/commands/loom/judge.md",
+    ".loom/docs/advanced-hooks.md",
+    ".loom/roles/doctor.md",
+    ".loom/roles/judge.md",
+    ".loom/docs/targeted-role-invocation.md",
+    ".loom/scripts/spawn-codex.sh",
+    ".loom/scripts/sweep-lease-fence.sh",
+    ".loom/scripts/sweep-lease-publish.sh",
+    ".loom/scripts/sweep-lease-renew.sh",
+    ".loom/scripts/tests/test-sweep-lease-fence.sh",
+    ".loom/scripts/tests/test-sweep-lease-publish.sh",
+    ".loom/scripts/tests/test-sweep-lease-renew.sh",
+    ".loom/scripts/tests/test-targeted-role-invocation.sh"
   ],
   "requires_daemon": "0.19.1146",
-  "last_resync": "2026-11-16"
+  "last_resync": "2026-11-17"
 }

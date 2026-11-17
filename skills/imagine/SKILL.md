@@ -45,7 +45,9 @@ itself a generated image (`null` otherwise).
 file keeps the provider's bytes, and the extension follows them (Gemini often
 returns JPEG, so `-o out.png` writes `out.jpg` plus `out.jpg.json`, with a
 `imagine: provider returned JPEG; wrote out.jpg` note on stderr). Read the real
-path from stdout or `--json`, and branch on the sidecar `format`
+path from stdout or `--json` — both live on stdout: one path line per image, or
+one JSON metadata array when `--json` is set (each record carries `path`;
+stderr is diagnostics only). Then branch on the sidecar `format`
 (`png|jpeg|webp|unknown`) / `mime` rather than the extension you asked for.
 
 There is no `--steps` flag; pass step counts through the provider passthrough,

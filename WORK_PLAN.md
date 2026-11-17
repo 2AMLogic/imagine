@@ -13,33 +13,32 @@ _None._
 
 `loom:very-important` (one counts per workspace); every stage takes these first.
 
-- **#20**: fit: stop writing PNG bytes under a non-PNG name, and add tests for postprocess
+_None._
 
 ## Important
 
 `loom:important`; taken before unlabelled work.
 
-- **#21**: fit: write a provenance sidecar for the fitted image
-- **#22**: Deduplicate the Cloudflare credentials-missing hint: gen still prints the pre-#4 message
+- **#42**: fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency
 
 ## Ready
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#28**: Collapse the three hand-maintained version literals to one source of truth
+_None._
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
-- **#20**: fit: stop writing PNG bytes under a non-PNG name, and add tests for postprocess
-- **#22**: Deduplicate the Cloudflare credentials-missing hint: gen still prints the pre-#4 message
+- **#28**: Collapse the three hand-maintained version literals to one source of truth
+- **#42**: fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#34**: build: derive version from VERSION instead of duplicated literals
 
 ## Approved (Awaiting Merge)
 
@@ -51,8 +50,8 @@ _None._
 
 Issues carrying `loom:curated`.
 
-- **#20**: fit: stop writing PNG bytes under a non-PNG name, and add tests for postprocess *(curated)*
-- **#21**: fit: write a provenance sidecar for the fitted image *(curated)*
+- **#33**: fit: confirm the actual letterbox colour magick renders for an alpha-less destination *(curated)*
+- **#42**: fit: _ALPHA_OK omits alpha-capable .avif/.gif/.tif, so contain now flattens their source transparency *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -67,11 +66,11 @@ _None._
 | Bucket | Count |
 |------|-------|
 | Operator merge-risk holds | 0 |
-| Very important | 1 |
-| Important | 2 |
-| Ready (`loom:issue`) | 1 |
+| Very important | 0 |
+| Important | 1 |
+| Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 2 |
-| PRs awaiting review | 0 |
+| PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 0 |
 | Curated | 2 |
 | Architect / Hermit proposals | 0 |

@@ -2,8 +2,29 @@
 
 Chronological record of merged PRs and closed issues, maintained by the Guide role.
 
+### 2026-11-16
+
+- **PR #44**: fix: hash fit source before fit_image writes dest
+- **Issue #37** (closed): fit: in-place fit (-o pointing at the source) records a self-referential source_sha256
+- **PR #17**: docs: roadmap as of 2026-11-13
+- **PR #46**: tests: hoist duplicated cli.fit_image double into shared conftest fixtures
+- **Issue #43** (closed): tests: hoist the duplicated cli.fit_image double into a shared conftest fixture
+- **PR #36**: fix: print --json records to stdout; stderr stays diagnostics-only
+- **Issue #31** (closed): gen/edit: --json payload and applicability notes share stderr, so json.loads(stderr) breaks
+- **PR #41**: tests: cover cmd_fit's default destination name and flag passthrough
+- **Issue #30** (closed): tests: cover cmd_fit's default destination name (<stem>-fit.png)
+- **PR #39**: fix: note --cf-account as ignored on Gemini models
+- **Issue #26** (closed): gen/edit: --cf-account is silently ignored on a Gemini model
+- **PR #38**: fix: flatten source alpha explicitly in contain's alpha-less letterbox (partial; Issue #33 stays open for an attended render probe)
+
 ### 2026-11-15
 
+- **PR #35**: feat: write a provenance sidecar for fit output
+- **PR #29**: fix: stop fit writing PNG bytes under a non-PNG name; add postprocess tests
+- **PR #27**: fix: give gen/edit the same Cloudflare account-selection guidance as doctor
+- **Issue #22** (closed): Deduplicate the Cloudflare credentials-missing hint: gen still prints the pre-#4 message
+- **Issue #21** (closed): fit: write a provenance sidecar for the fitted image
+- **Issue #20** (closed): fit: stop writing PNG bytes under a non-PNG name, and add tests for postprocess
 - **PR #25**: feat: note on stderr when --param or --size does not apply to the provider
 - **Issue #18** (closed): gen/edit: print a note when --param or --size does not apply to the selected provider
 
