@@ -11,7 +11,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-_ALPHA_OK = {".png", ".webp"}
+_ALPHA_OK = {".png", ".webp", ".avif", ".tif", ".tiff"}
 
 
 def _run(cmd: list[str]) -> None:
@@ -29,10 +29,12 @@ def fit(
 ) -> Path:
     """Resize `src` to `size` (WxH) and/or compress under `max_kb`, into `dest`.
 
-    mode "contain" letterboxes (onto transparency for .png/.webp; white for
-    alpha-less formats, flattened with `-alpha remove` so any transparency the
-    source carries composites against the background instead of being left to
-    the destination encoder); "cover" center-crops.
+    mode "contain" letterboxes (onto transparency for .png/.webp/.avif/
+    .tif/.tiff; white for the rest — including .gif, whose binary
+    transparency would fringe on an anti-aliased resize — flattened with
+    `-alpha remove` so any transparency the source carries composites
+    against the background instead of being left to the destination
+    encoder); "cover" center-crops.
     """
     if not shutil.which("magick"):
         raise SystemExit("imagine: `magick` (ImageMagick) is required for fit — brew install imagemagick")
