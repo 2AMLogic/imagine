@@ -2,6 +2,10 @@
 
 Chronological record of merged PRs and closed issues, maintained by the Guide role.
 
+### 2026-11-18
+
+- **Issue #33** (closed): fit: confirm the actual letterbox colour magick renders for an alpha-less destination
+
 ### 2026-11-17
 
 - **PR #53**: fix(tests): point in-place fit tests at conftest fit_calls/fitted_png fixtures

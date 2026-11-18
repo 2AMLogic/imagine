@@ -49,7 +49,7 @@ _None._
 
 Issues carrying `loom:curated`.
 
-- **#33**: fit: confirm the actual letterbox colour magick renders for an alpha-less destination *(curated)* *(held)*
+_None._
 
 ## Proposed (Architect / Hermit)
 
@@ -70,7 +70,7 @@ _None._
 | In Progress (`loom:building`) | 1 |
 | PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 1 |
+| Curated | 0 |
 | Architect / Hermit proposals | 0 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->
